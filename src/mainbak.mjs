@@ -18,7 +18,7 @@ app.use(bodyParser.json({limit: '20mb'})); // 处理json格式的数据请求
 
 // kimi实例
 const kimiClient = new openai.OpenAI({
-    apiKey: "sk-IeRwQT3CBViaQpXSrbIg0joSykFRO1x0KNJWtAmoCEkAwctU", // 在这里将 MOONSHOT_API_KEY 替换为你从 Kimi 开放平台申请的 API Key
+    apiKey: "your api key", // 在这里将 MOONSHOT_API_KEY 替换为你从 Kimi 开放平台申请的 API Key
     baseURL: "https://api.moonshot.cn/v1",
 });
 
