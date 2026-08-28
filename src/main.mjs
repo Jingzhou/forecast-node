@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import {v4} from 'uuid'
 import dayjs from "dayjs";
+import {MOONSHOT_API_KEY} from "./config.js";
 
 const app = express()
 
@@ -14,7 +15,7 @@ app.use(bodyParser.json({limit: '20mb'})); // 处理json格式的数据请求
 
 // kimi实例
 const kimiClient = new openai.OpenAI({
-    apiKey: "your api key", // 在这里将 MOONSHOT_API_KEY 替换为你从 Kimi 开放平台申请的 API Key
+    apiKey: MOONSHOT_API_KEY, // 在这里将 MOONSHOT_API_KEY 替换为你从 Kimi 开放平台申请的 API Key
     baseURL: "https://api.moonshot.cn/v1",
 });
 
