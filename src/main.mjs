@@ -4,7 +4,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import {v4} from 'uuid'
 import dayjs from "dayjs";
-import {MOONSHOT_API_KEY} from "./config.js";
+import {DEEPSEEK_API_KEY} from "./config.js";
 
 const app = express()
 
@@ -13,10 +13,10 @@ app.use(bodyParser.urlencoded({extended: true, limit: '20mb'}));
 app.use(bodyParser.json({limit: '20mb'})); // 处理json格式的数据请求
 
 
-// kimi实例
-const kimiClient = new openai.OpenAI({
-    apiKey: MOONSHOT_API_KEY, // 在这里将 MOONSHOT_API_KEY 替换为你从 Kimi 开放平台申请的 API Key
-    baseURL: "https://api.moonshot.cn/v1",
+// deepseek实例
+const deepseekClient = new openai.OpenAI({
+    apiKey: DEEPSEEK_API_KEY, // 在这里将 DEEPSEEK_API_KEY 替换为你从 Deepseek 开放平台申请的 API Key
+    baseURL: "https://api.deepseek.com",
 });
 
 const tools = [
@@ -40,11 +40,9 @@ async function gerForecast(params, messages) {
     messages.push({role: "user", content: `我的问题[${params.question}], 小六壬卦象:[${params.short}], 小六壬卦象含义:[${params.paraphrase.join('')}]`})
     while (finishReason === null || finishReason === "tool_calls") {
         try {
-            const completion = await kimiClient.chat.completions.create({
-                model: "moonshot-v1-auto",
+            const completion = await deepseekClient.chat.completions.create({
+                model: "deepseek-flash",
                 messages: messages,
-                temperature: 0.3,
-                tools: tools,  // <-- 我们通过 tools 参数，将定义好的 tools 提交给 Kimi 大模型
             });
             const choice = completion.choices[0];
             finishReason = choice.finish_reason;
@@ -70,7 +68,8 @@ async function gerForecast(params, messages) {
             }
             msg_result = {code: '0', data: { content: choice.message.content, date: dayjs().format('YYYY-MM-DD HH:mm:ss'), id: v4() }, message: 'success'}; // <-- 在这里，我们才将模型生成的回复返回给用户
         } catch (e) {
-            msg_result = {code: '1', data: {}, message: 'error'}
+            finishReason = 'error'
+            msg_result = {code: '1', data: e.message, message: 'error'}
         }
 
     }
@@ -82,11 +81,9 @@ async function gerDivination(params, messages) {
     messages.push({role: "user", content: `我的问题：{${params.question}}, 易经六十四卦卦象：${params.short}`})
     while (finishReason === null || finishReason === "tool_calls") {
         try {
-            const completion = await kimiClient.chat.completions.create({
-                model: "moonshot-v1-auto",
+            const completion = await deepseekClient.chat.completions.create({
+                model: "deepseek-flash",
                 messages: messages,
-                temperature: 0.3,
-                tools: tools,  // <-- 我们通过 tools 参数，将定义好的 tools 提交给 Kimi 大模型
             });
             const choice = completion.choices[0];
             finishReason = choice.finish_reason;
